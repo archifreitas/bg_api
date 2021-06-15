@@ -1,0 +1,1 @@
+web: run api/fast.py
