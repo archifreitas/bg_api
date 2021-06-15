@@ -7,7 +7,6 @@ import pickle
 import tensorflow as tf
 
 # Internal libraries
-import big_picture
 from big_picture.classifier import Classifier
 
 app = FastAPI()
