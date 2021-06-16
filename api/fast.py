@@ -111,12 +111,17 @@ def predict(sample: dict):
 
     # Loading the data
     data = pd.DataFrame(sample, index=[0])
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='api/wagon-bootcamp-311206-ca90fdd74d5b.json'
 
-    # Loading the model
-    client = storage.Client()
-    path = "gs://big_picture_model/model"
+    # # Online model
+    # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='api/wagon-bootcamp-311206-ca90fdd74d5b.json'
+    # client = storage.Client()
+    # path = "gs://big_picture_model/model"
+    # model = Classifier()
+
+    # Package model
+    path = "models/baseline_v02"
     model = Classifier()
+
 
     model.load(path)
 
