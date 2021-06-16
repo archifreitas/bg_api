@@ -1,10 +1,15 @@
 # Api libraries
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel
+import os
 import pandas as pd
 import requests
 import pickle
-import tensorflow as tf
+import tensorflow as tf 
+from google.cloud import storage
 
 # Internal libraries
 from big_picture.classifier import Classifier
@@ -24,7 +29,7 @@ def index():
     return {'welcome': 'This is the Big_Picture API'}
 
 @app.get("/search")
-def search(query, title=None, source=None, label=None, date_from=None):
+def search(query, title=None, source=None, date_from=None):
     """
     Endpoint that searches for the news and retrieves 10 examples of news.
 
@@ -53,8 +58,7 @@ def search(query, title=None, source=None, label=None, date_from=None):
     # dar replace pela função do martins mais tarde
     opt_args = {'q': query,
                 'qInTitle': title,
-                'sources': source,
-                'domain': label, 
+                'domains': source,
                 'from': date_from}
 
     params = {}
@@ -64,7 +68,8 @@ def search(query, title=None, source=None, label=None, date_from=None):
             params[key] = value
 
     #TODO Define SECRET
-    params['apiKey'] = 'a97dc775dfc04e44867f79e0b512590b'
+    #params['apiKey'] = 'a97dc775dfc04e44867f79e0b512590b'
+    params['apiKey'] = 'ee3afbfc5e1141e5a9601048884b6512'
     
     url = 'https://newsapi.org/v2/'
     everything = 'everything'
@@ -72,6 +77,9 @@ def search(query, title=None, source=None, label=None, date_from=None):
 
 
     response = requests.get(url + everything, params=params).json()
+
+    print(response)
+    #import ipdb; ipdb.set_trace()
 
     # Select ten news and retrieve useful information
     news_dict = {}
@@ -82,7 +90,7 @@ def search(query, title=None, source=None, label=None, date_from=None):
             'source': article['source']['name'],
             'description': article['description'],
             'url': article['url'],
-            'date': article['publishedAt'][0:10],
+            'publishedAt': article['publishedAt'][0:10],
             'content': article['content']
         }
 
@@ -101,24 +109,37 @@ def predict(sample: dict):
         Dictionary with news selected by the user.
     """
 
-
-    print(f"PARAMS sample {sample}")
-
+    # Loading the data
     data = pd.DataFrame(sample, index=[0])
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='api/wagon-bootcamp-311206-ca90fdd74d5b.json'
 
-    filename = '../bg_api/models/classifier_baseline'
+    # Loading the model
+    client = storage.Client()
+    path = "gs://big_picture_model/model"
+    model = Classifier()
 
-    import ipdb; ipdb.set_trace()
-    loaded_model = tf.keras.models.load_model(filename)
-    #loaded_model = pickle.load(open(filename, 'rb'))
+    model.load(path)
 
-    prediction = loaded_model.predict(data)
+    prediction = model.predict(
+        data, 
+        source='prepared', 
+        params={'cat_mapping': False}, 
+        printed=False)
+
+    for key in prediction.keys():
+        this_cluster = prediction[key]
+
+    res_data = this_cluster.df.copy()
+
+    #import ipdb; ipdb.set_trace()
+    
+    res_dict = {
+        'data': res_data.to_json(orient='records'),
+        'topic': this_cluster.topic}
+        #'wordcloud': this_cluster.wordcloud}
 
 
-    # get Classifier instance
-    # predict new data
-    # Sent_analysis new data
-    # Normalize new SA clusters
-    # return title, label, clusters and SA.
+    if model != None:
+        return res_dict
 
-    return prediction
+    return data
