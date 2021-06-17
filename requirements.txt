@@ -19,6 +19,8 @@ yapf
 
 # API
 gcsfs
+google-cloud-storage
+mlflow
 s3fs
 fastapi
 uvicorn
@@ -28,6 +30,7 @@ git+https://github.com/archifreitas/big_picture
 
 # utilities
 six>=1.14
+joblib
 memoized-property
 termcolor
 

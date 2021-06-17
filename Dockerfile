@@ -4,6 +4,7 @@ COPY api /app
 COPY requirements.txt /requirements.txt
 COPY models /models
 
+RUN apt update && apt-get install -y git
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN python -c 'import nltk; nltk.download("punkt")'
