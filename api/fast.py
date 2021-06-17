@@ -9,7 +9,6 @@ import pandas as pd
 import requests
 import pickle
 import tensorflow as tf 
-from google.cloud import storage
 
 # Internal libraries
 from big_picture.classifier import Classifier
@@ -119,20 +118,6 @@ def predict(sample: dict):
 
     # Loading the data
     data = pd.DataFrame(sample, index=[0])
-
-    # # Online model
-    # os.environ["GOOGLE_APPLICATION_CREDENTIALS"]='api/wagon-bootcamp-311206-ca90fdd74d5b.json'
-    # client = storage.Client()
-    # path = "gs://big_picture_model/model"
-    # model = Classifier()
-
-    # Package model
-    # try:
-
-    # except:
-    #     pass
-
-    #import ipdb; ipdb.set_trace()
 
     prediction = model.predict(
         data, 
