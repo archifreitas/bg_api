@@ -8,7 +8,6 @@ import os
 import pandas as pd
 import requests
 import pickle
-import tensorflow as tf 
 
 # Internal libraries
 from big_picture.classifier import Classifier
