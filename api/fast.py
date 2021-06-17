@@ -24,6 +24,14 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+path = "models/baseline_v01"
+model = Classifier()
+try:
+    model.load(path)
+except:
+    pass
+
+
 @app.get("/")
 def index():
     return {'welcome': 'This is the Big_Picture API'}
@@ -119,11 +127,10 @@ def predict(sample: dict):
     # model = Classifier()
 
     # Package model
-    path = "models/baseline_v02"
-    model = Classifier()
+    # try:
 
-
-    model.load(path)
+    # except:
+    #     pass
 
     prediction = model.predict(
         data, 
@@ -135,14 +142,10 @@ def predict(sample: dict):
         this_cluster = prediction[key]
 
     res_data = this_cluster.df.copy()
-
-    #import ipdb; ipdb.set_trace()
     
     res_dict = {
         'data': res_data.to_json(orient='records'),
         'topic': this_cluster.topic}
-        #'wordcloud': this_cluster.wordcloud}
-
 
     if model != None:
         return res_dict
