@@ -24,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-path = "models/baseline_v01"
+path = "models/final_model"
 model = Classifier()
 try:
     model.load(path)
@@ -135,16 +135,14 @@ def predict(sample: dict):
     prediction = model.predict(
         data, 
         source='prepared', 
-        params={'cat_mapping': False}, 
+        params={'cat_mapping': False, 'lemmatize':False}, 
         printed=False)
 
     for key in prediction.keys():
         this_cluster = prediction[key]
-
-    res_data = this_cluster.df.copy()
     
     res_dict = {
-        'data': res_data.to_json(orient='records'),
+        'data': this_cluster.df.to_json(orient='records'),
         'topic': this_cluster.topic}
 
     if model != None:

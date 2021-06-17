@@ -2,6 +2,7 @@ FROM python:3.8.6-buster
 
 COPY api /app
 COPY requirements.txt /requirements.txt
+COPY models /models
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
