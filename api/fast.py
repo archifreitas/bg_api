@@ -86,7 +86,7 @@ def search(query, title=None, source=None, date_from=None):
 
     response = requests.get(url + everything, params=params).json()
 
-    print(response)
+    #print(response)
     #import ipdb; ipdb.set_trace()
 
     # Select ten news and retrieve useful information
@@ -131,6 +131,8 @@ def predict(sample: dict):
 
     # except:
     #     pass
+
+    #import ipdb; ipdb.set_trace()
 
     prediction = model.predict(
         data, 
